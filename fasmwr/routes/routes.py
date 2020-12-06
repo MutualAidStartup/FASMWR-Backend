@@ -1,5 +1,6 @@
 from flask import (Blueprint, request, jsonify)
 from flask_cors import cross_origin
+from app import db
 
 fasmwr = Blueprint('fasmwr', __name__)
 
