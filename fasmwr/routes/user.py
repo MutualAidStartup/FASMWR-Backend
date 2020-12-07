@@ -20,7 +20,7 @@ def register():
     db.session.add(user)
     db.session.commit()
     token = user.get_reset_token()
-    return jsonify(valid=True,token=token),200
+    return jsonify(valid=True,token=token,id=user.id),200
 
 @users.route('/Login', methods=['GET', 'POST'])
 @cross_origin(supports_credentials=True)
@@ -54,6 +54,8 @@ def edit_account():
     email = request.args.get('email', None)
     name = request.args.get('name', None)
     location = request.args.get('location', None)
+    url = request.args.get('url', None)
+    image = request.args.get('image', None)
     # Check auth token
     token = request.args.get('token', None)
     if token is None:
@@ -62,7 +64,7 @@ def edit_account():
     if user_id is None:
         return "No User_ID provided", 400
 
-    resp = User.decode_auth_token(token)
+    resp = User.verify_reset_token(token)
     #check if resp is not a string
     if not isinstance(resp, str):
         user = User.query.get_or_404(user_id)
@@ -79,3 +81,27 @@ def edit_account():
         return "Updated information", 200
     else:
         return jsonify(status=False,reason=resp)
+
+@users.route('/getAccountData', methods=['GET', 'POST'])
+@cross_origin(supports_credentials=True)
+def view_data():
+    """ view an accounts data """
+    
+    user_id = request.args.get('userId', None) 
+    # Check auth token
+    token = request.args.get('token', None)
+
+    if token is None:
+        return "No token provided", 406
+
+    if user_id is None:
+        return "No User_ID provided", 400
+
+    resp = User.verify_reset_token(token)
+    #check if resp is not a string
+    if not isinstance(resp, str):
+        user = User.query.get_or_404(user_id)
+
+        return jsonify(name=user.name,email=user.email,description=user.description,location=user.location,link=user.link,image=user.image), 200
+    else:
+        return "Token not valid", 400

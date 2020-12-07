@@ -13,6 +13,9 @@ class User(db.Model):
     password_hash = db.Column(db.String())
     name = db.Column(db.String(), unique=False)
     location = db.Column(db.String(), unique=False)
+    description = db.Column(db.String(), unique=False)
+    link = db.Column(db.String(), unique=False)
+    image = db.Column(db.String(), unique=False)
 
     def get_reset_token(self, expires_sec=3600):
         """

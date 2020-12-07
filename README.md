@@ -22,7 +22,8 @@ $ psql
 /# create database fasmwr_db;
 /# \q
 - config.py line 9 -> Set your secret key - DO NOT PUSH THIS TO GIT - NOTE: This file is not by default in .gitignore since you need a local copy
-$ export FASMWR_DATABASE_URL="postgresql:///fasmwr_db"
+$ export FASMWR_DATABASE_URL="postgresql://postgres:YOURPASSWORDHERE@localhost/fasmwr_db"
+$ python3 create_db.py
 
 # migrate the database - how to update the models.py without destroying and re-creating the database
 $ python manage.py db migrate
