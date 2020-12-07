@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash # hash
 
 
 class User(db.Model):
-    __tablename__ = 'results'
+    __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(), unique=True)
@@ -16,6 +16,8 @@ class User(db.Model):
     description = db.Column(db.String(), unique=False)
     link = db.Column(db.String(), unique=False)
     image = db.Column(db.String(), unique=False)
+
+    requests = db.relationship('Request', backref='user', cascade="all, delete, delete-orphan")
 
     def get_reset_token(self, expires_sec=3600):
         """
@@ -38,3 +40,12 @@ class User(db.Model):
         except:
             return None
         return User.query.get(id)
+
+class Request(db.Model):
+    __tablename__ = 'request'
+
+    id = db.Column(db.Integer, primary_key=True)
+    situation = db.Column(db.String)
+    identities = db.Column(db.String)
+    amount = db.Column(db.Float)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

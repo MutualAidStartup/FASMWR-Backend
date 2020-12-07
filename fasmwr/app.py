@@ -23,9 +23,11 @@ bcrypt.init_app(app)
 # Routing
 from routes.routes import fasmwr
 from routes.user import users
+from routes.request_aid import requestAid
 
 app.register_blueprint(fasmwr)
 app.register_blueprint(users)
+app.register_blueprint(requestAid)
 
 
 if __name__ == '__main__':
