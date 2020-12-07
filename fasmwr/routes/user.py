@@ -54,7 +54,8 @@ def edit_account():
     email = request.args.get('email', None)
     name = request.args.get('name', None)
     location = request.args.get('location', None)
-    url = request.args.get('url', None)
+    link = request.args.get('link', None)
+    description = request.args.get('description', None)
     image = request.args.get('image', None)
     # Check auth token
     token = request.args.get('token', None)
@@ -78,9 +79,17 @@ def edit_account():
         if location is not None:
             user.location = location
 
+        if link is not None:
+            user.link = link
+
+        if description is not None:
+            user.description = description
+
+        db.session.commit()
+
         return "Updated information", 200
     else:
-        return jsonify(status=False,reason=resp)
+        return "Bad Token", 406
 
 @users.route('/getAccountData', methods=['GET', 'POST'])
 @cross_origin(supports_credentials=True)
