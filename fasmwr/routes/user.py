@@ -5,40 +5,45 @@ from models import User
 
 users = Blueprint('users', __name__)
 
-@users.route('/requestAid', methods=['GET', 'POST'])
+@users.route('/Register', methods=['GET', 'POST'])
 @cross_origin(supports_credentials=True)
 def register():
     """ Register a new Mutual Aid """
     
-    hashed_password = bcrypt.generate_password_hash(request.args.get('password', None))
+    password = request.args.get('password', None)
+    print(password)
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     email = request.args.get('email', None)
 
-    user = User(email=email,password=hashed_password, name="Unnamed Mutual Aid")
+    user = User(email=email,password_hash=hashed_password, name="Unnamed Mutual Aid")
 
     db.session.add(user)
     db.session.commit()
-    return "Successfully created a Mutal Aid!",200
+    token = user.get_reset_token()
+    return jsonify(valid=True,token=token),200
 
-@users.route('/login', methods=['GET', 'POST'])
+@users.route('/Login', methods=['GET', 'POST'])
 @cross_origin(supports_credentials=True)
 def login():
     """ login to your Mutual Aid """
     
-    password = request.args.get('password', None)
     email = request.args.get('email', None)
+    password = request.args.get('password', None)
 
     user = User.query.filter_by(email=email).first()
 
     # if no user under that email is found, return false
     if user is None:
-        return jsonify(valid=False,token=None)
+        print("user is none")
+        return "Email was incorrect", 406
     
-    if user.check_email(email) && user.check_password(password):
+    if user and bcrypt.check_password_hash(user.password_hash,password):
         # send an encrypted version of the token
-        token = bcrypt.generate_password_hash(user.token)
-        return jsonify(valid=True,token=token), 200
-    else
-        return jsonify(valid=False,token=None), 406
+        token = user.get_reset_token()
+        return jsonify(valid=True,token=token,id=user.id), 200
+    else:
+        print("email: " + email + " and password: " + password + " was incorrect.")
+        return "password was incorrect", 406
 
 @users.route('/editAccount', methods=['GET', 'POST'])
 @cross_origin(supports_credentials=True)
@@ -49,19 +54,28 @@ def edit_account():
     email = request.args.get('email', None)
     name = request.args.get('name', None)
     location = request.args.get('location', None)
+    # Check auth token
+    token = request.args.get('token', None)
+    if token is None:
+        return "No token provided", 406
 
     if user_id is None:
         return "No User_ID provided", 400
 
-    user = User.query.get_or_404(user_id)
+    resp = User.decode_auth_token(token)
+    #check if resp is not a string
+    if not isinstance(resp, str):
+        user = User.query.get_or_404(user_id)
 
-    if email is not None:
-        user.email = email
+        if email is not None:
+            user.email = email
 
-    if name is not None:
-        user.name = name
+        if name is not None:
+            user.name = name
 
-    if location is not None:
-        user.location = location
+        if location is not None:
+            user.location = location
 
-    return "Updated information", 200
+        return "Updated information", 200
+    else:
+        return jsonify(status=False,reason=resp)

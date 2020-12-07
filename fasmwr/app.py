@@ -2,6 +2,7 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from config import BaseConfig
 import os
 
 # Flask App
@@ -9,10 +10,15 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 # Database
-#app.config.from_object(os.environ['APP_SETTINGS'])
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 bcrypt = Bcrypt()
+
+app.config.from_object(BaseConfig)
+db.app = app
+app.app_context().push()
+db.init_app(app)
+bcrypt.init_app(app)
+
 
 # Routing
 from routes.routes import fasmwr

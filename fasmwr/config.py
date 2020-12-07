@@ -2,27 +2,29 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class Config(object):
+class BaseConfig(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = 'YOUR SECRET KEY HERE'
-    SQLALCHEMY_DATABASE_URI = os.environ['FASMWR_DATABASE_URL']
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'i-need-to-change-this'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('FASMWR_DATABASE_URI')
+    # we need this because we're developing on localhost
+    AUTHLIB_INSECURE_TRANSPORT = True
 
 
-class ProductionConfig(Config):
+class ProductionConfig(BaseConfig):
     DEBUG = False
 
 
-class StagingConfig(Config):
+class StagingConfig(BaseConfig):
     DEVELOPMENT = True
     DEBUG = True
 
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig(BaseConfig):
     DEVELOPMENT = True
     DEBUG = True
 
 
-class TestingConfig(Config):
+class TestingConfig(BaseConfig):
     TESTING = True
