@@ -114,3 +114,41 @@ def view_data():
         return jsonify(name=user.name,email=user.email,description=user.description,location=user.location,link=user.link,image=user.image), 200
     else:
         return "Token not valid", 400
+
+@users.route('/getCardInfo', methods=['GET', 'POST'])
+@cross_origin(supports_credentials=True)
+def get_card_data():
+    """ view an accounts data """
+
+    user_id = request.args.get('id', None)
+    max_num_cards = int(request.args.get('num_cards', None))
+    count = 0
+    cards = []
+
+    if user_id is None:
+        users = User.query.all()
+        for user in users:
+            if(count>=max_num_cards):
+                break
+            cards.append({
+                "id":user.id,
+                "name":user.name,
+                "description":user.description,
+                "link":user.link,
+                "logo":user.image
+            })
+            count+=1
+    else:
+        user = User.query.filter_by(id=user_id).first()
+        cards.append({
+            "id":user.id,
+            "name":user.name,
+            "description":user.description,
+            "link":user.link,
+            "logo":user.image
+        })
+
+    
+
+    
+    return jsonify(cards=cards), 200
