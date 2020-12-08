@@ -24,10 +24,12 @@ bcrypt.init_app(app)
 from routes.routes import fasmwr
 from routes.user import users
 from routes.request_aid import requestAid
+from routes.venmo_routes import venmo_routes
 
 app.register_blueprint(fasmwr)
 app.register_blueprint(users)
 app.register_blueprint(requestAid)
+app.register_blueprint(venmo_routes)
 
 
 if __name__ == '__main__':
