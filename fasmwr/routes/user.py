@@ -2,6 +2,7 @@ from flask import (Blueprint, request, jsonify)
 from flask_cors import cross_origin
 from app import db, bcrypt
 from models import User
+from random import randint 
 
 users = Blueprint('users', __name__)
 
@@ -15,7 +16,11 @@ def register():
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     email = request.args.get('email', None)
 
-    user = User(email=email,password_hash=hashed_password, name="Unnamed Mutual Aid")
+    uid = randint(100, 1000000000)
+    while(User.query.filter_by(id=uid).first() is not None):
+        uid = randint(100, 1000000000)
+
+    user = User(id=uid, email=email,password_hash=hashed_password, name="Unnamed Mutual Aid")
 
     db.session.add(user)
     db.session.commit()
