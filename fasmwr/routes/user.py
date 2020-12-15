@@ -116,7 +116,7 @@ def view_data():
     if not isinstance(resp, str):
         user = User.query.get_or_404(user_id)
 
-        return jsonify(name=user.name,email=user.email,description=user.description,location=user.location,link=user.link,image=user.image), 200
+        return jsonify(name=user.name,email=user.email,description=user.description,location=user.location,link=user.link,image=user.image, venmoToken=user.venmo_token), 200
     else:
         return "Token not valid", 400
 

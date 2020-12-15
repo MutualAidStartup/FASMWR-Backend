@@ -11,3 +11,6 @@ flask-bcrypt
 
 # Authorization tokens
 pyjwt==1.4.2
+
+# Venmo Api
+venmo-api --upgrade

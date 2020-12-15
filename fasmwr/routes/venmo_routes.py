@@ -51,6 +51,7 @@ def verify_venmo_acc():
     authn_api = AuthenticationApi(api_client=ApiClient(), device_id=device_id)
     r = authn_api.authenticate_using_username_password(username=username, password=password)
     print(r)
+    # if we get an error, that means either entered the username and password wrong or we need 2 factor authentication
     if r.get('body').get('error'):
         otp_secret = r['headers'].get('venmo-otp-secret')
         if not otp_secret:
@@ -64,6 +65,9 @@ def verify_venmo_acc():
     confirm("Successfully logged in. Note your token and device-id")
     print(f"access_token: {access_token}\n"
             f"device-id: {authn_api.__device_id}")
+
+    user.venmo_token = access_token
+    db.session.commit()
 
     return jsonify(two_factor=None,token=access_token, otp_secret=None),200
     
@@ -89,7 +93,25 @@ def request_two_factor(otp_secret):
 @cross_origin(supports_credentials=True)
 def verify_venmo_code():
     authn_api = AuthenticationApi(api_client=ApiClient(), device_id=device_id)
+    
     user_otp = request.args.get('code', None)
     otp_secret = request.args.get('otp_secret', None)
+    token = request.args.get('token',None)
+    userId = request.args.get('userId',None)
+    
+    user = User.query.filter_by(id=userId).first()
+    if user is None:
+        return "Could not find User by that id",404
+
+    # Verify User
+    resp = User.verify_reset_token(token)
+
+    #check if resp is not a string
+    if isinstance(resp, str):
+        return "Token expired", 403
+    
     print(user_otp)
-    return jsonify(token=authn_api.authenticate_using_otp(user_otp, otp_secret))
+    auth_token = authn_api.authenticate_using_otp(user_otp, otp_secret)
+    user.venmo_token = auth_token
+    db.session.commit()
+    return jsonify(token=auth_token)
