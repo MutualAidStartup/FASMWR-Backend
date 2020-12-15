@@ -146,8 +146,23 @@ def venmo_log_out():
 @venmo_routes.route('/getVenmoProfile', methods=['GET', 'POST'])
 @cross_origin(supports_credentials=True)
 def venmo_user_info():
-    print("GETTING VENMO PROFILE")
+
     auth_token = request.args.get('venmo_token',None)
+    token = request.args.get('token',None)
+    userId = request.args.get('userId',None)
+    
+    user = User.query.filter_by(id=userId).first()
+    if user is None:
+        return "Could not find User by that id",404
+
+    # Verify User
+    resp = User.verify_reset_token(token)
+
+    #check if resp is not a string
+    if isinstance(resp, str):
+        return "Token expired", 403
+
+    #get venmo info
     api_client = ApiClient(access_token=auth_token)
     profile = api_client.call_api(resource_path="/me", method='GET')
     return jsonify(venmo_balance=profile["body"]["data"]["balance"]),200
