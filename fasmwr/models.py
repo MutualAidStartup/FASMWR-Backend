@@ -16,6 +16,7 @@ class User(db.Model):
     description = db.Column(db.String(), unique=False)
     link = db.Column(db.String(), unique=False)
     image = db.Column(db.String(), unique=False)
+    venmo_token = db.Column(db.String())
 
     requests = db.relationship('Request', backref='user', cascade="all, delete, delete-orphan")
 
