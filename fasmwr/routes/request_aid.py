@@ -74,5 +74,35 @@ def get_request_list():
 
     return jsonify(request=request_list),200
     
-
+@requestAid.route('/removeRequest', methods=['GET', 'POST'])
+@cross_origin(supports_credentials=True)
+def remove_request():
+    """ Remove a request from the database """
     
+    user_id = request.args.get('userId', None)
+    token = request.args.get('token', None)
+    request_id = request.args.get('request_id', None)
+    
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return "Could not find User by that id",404
+
+    # Verify User
+    resp = User.verify_reset_token(token)
+
+    #check if resp is not a string
+    if isinstance(resp, str):
+        return "Token expired", 403
+    
+    request_obj = Request.query.filter_by(id=request_id).first()
+
+    if request_obj is not None:
+        print("found a request")
+
+        db.session.flush()
+
+        db.session.delete(request_obj)
+
+        db.session.commit()
+
+    return "Removed", 200
