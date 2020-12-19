@@ -6,7 +6,7 @@ from config import BaseConfig
 import os
 
 # Flask App
-app = Flask(__name__, static_folder='../build', static_url_path='/')
+app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 # Database
@@ -25,10 +25,6 @@ from routes.routes import fasmwr
 from routes.user import users
 from routes.request_aid import requestAid
 from routes.venmo_routes import venmo_routes
-
-@app.route('/')
-def index():
-    return app.send_static_file('index.html')
 
 app.register_blueprint(fasmwr)
 app.register_blueprint(users)
