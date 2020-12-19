@@ -50,3 +50,4 @@ class Request(db.Model):
     identities = db.Column(db.String)
     amount = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    venmo_username = db.Column(db.String, nullable=False)

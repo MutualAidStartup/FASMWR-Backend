@@ -15,6 +15,7 @@ def request_from():
     situation = request.args.get('situation', None)
     identities = request.args.get('identities', None)
     amount = request.args.get('amount', None)
+    venmo_username = request.args.get('venmo_username', None)
     
     #Keeping this here as a note to how to get the elements of the identity
     #identities_array = re.split(', |,',identities)
@@ -24,7 +25,7 @@ def request_from():
     if user is None:
         return "Could not find a mutual aid by that id", 404
 
-    request_obj = Request(situation=situation,identities=identities,amount=amount, user_id=user_id)
+    request_obj = Request(situation=situation,identities=identities,amount=amount, user_id=user_id,venmo_username=venmo_username)
 
     db.session.add(request_obj)
     db.session.commit()
@@ -59,7 +60,10 @@ def get_request_list():
                 "identity":request_item.identity,
                 "situation":request_item.situation,
                 "amount":request_item.amount,
+                "venmo_account":request_item.venmo_username,
             })
+            print("=====================================")
+            print(request_item.venmo_username)
     else:
         counter = 0
         for request_item in requests:
@@ -70,7 +74,10 @@ def get_request_list():
                 "identities":request_item.identities,
                 "situation":request_item.situation,
                 "amount":request_item.amount,
+                "venmo_account":request_item.venmo_username,
             })
+            print("=====================================")
+            print(request_item.venmo_username)
 
     return jsonify(request=request_list),200
     
