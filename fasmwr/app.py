@@ -30,3 +30,7 @@ app.register_blueprint(fasmwr)
 app.register_blueprint(users)
 app.register_blueprint(requestAid)
 app.register_blueprint(venmo_routes)
+
+
+if __name__ == '__main__':
+    app.run()
