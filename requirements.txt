@@ -14,3 +14,6 @@ pyjwt==1.4.2
 
 # Venmo Api
 venmo-api
+
+# Heroku
+gunicorn
