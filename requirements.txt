@@ -16,4 +16,4 @@ pyjwt==1.4.2
 venmo-api
 
 # Heroku
-gunicorn
+gunicorn==19.9.0
