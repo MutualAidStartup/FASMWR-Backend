@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath fasmwr app.py
+web: gunicorn --bind 0.0.0.0:$PORT app:app
