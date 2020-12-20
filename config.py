@@ -7,7 +7,7 @@ class BaseConfig(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'i-need-to-change-this'
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     # we need this because we're developing on localhost
     AUTHLIB_INSECURE_TRANSPORT = True
 
